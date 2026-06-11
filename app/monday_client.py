@@ -16,6 +16,7 @@ def monday_request(query: str, variables: dict | None = None):
     headers = {
         "Authorization": MONDAY_API_TOKEN,
         "Content-Type": "application/json",
+        "API-Version": "2025-01",
     }
 
     response = requests.post(
@@ -67,6 +68,9 @@ def fetch_board_items(board_id: int):
                     display_value
                   }
                   ... on MirrorValue {
+                    display_value
+                  }
+                  ... on FormulaValue {
                     display_value
                   }
                 }
@@ -138,12 +142,15 @@ def fetch_items_by_group(board_id: int, group_id: str):
                     ... on BoardRelationValue {
                       display_value
                     }
-                    ... on MirrorValue {
-                      display_value
-                    }
+                  ... on MirrorValue {
+                    display_value
+                  }
+                  ... on FormulaValue {
+                    display_value
                   }
                 }
               }
+            }
             }
           }
         }

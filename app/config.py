@@ -7,6 +7,8 @@ MONDAY_DETECTION_BOARD_ID = int(os.getenv("MONDAY_DETECTION_BOARD_ID", "73231668
 MONDAY_TYPE_DEFAUTS_BOARD_ID = int(os.getenv("MONDAY_TYPE_DEFAUTS_BOARD_ID", "7331010926"))
 MONDAY_CSL1_BOARD_ID = int(os.getenv("MONDAY_CSL1_BOARD_ID", "7325349457"))
 MONDAY_CF_BOARD_ID = int(os.getenv("MONDAY_CF_BOARD_ID", "7325338826"))
+MONDAY_QUANTITE_BOARD_ID = int(os.getenv("MONDAY_QUANTITE_BOARD_ID", "7860870973"))
+MONDAY_COPIE_DETECTION_BOARD_ID = int(os.getenv("MONDAY_COPIE_DETECTION_BOARD_ID", "7415653956"))
 
 MONDAY_DETECTION_GROUPS = [
     "Semaine",
@@ -17,6 +19,7 @@ MONDAY_DETECTION_GROUPS = [
 DETECTION_COLUMN_MAP = {
     "defaut": "connecter_les_tableaux4__1",
     "date_detection": "date__1",
+    "semaine": "formule__1",
     "ligne": "statut__1",
     "bu": "statut2__1",
     "poste": "statut5__1",
@@ -50,3 +53,28 @@ LIGNE_OPTIONS = [
     "VM4 1",
     "VM4 2",
 ]
+
+QUANTITE_COLUMN_MAP = {
+    "quantite_controlee": "chiffres51__1",  # ✅ FIXED
+    "date": "date__1",
+    "semaine": "formule__1",  # ✅ FIXED
+    "ligne": "statut__1",
+    "bu": "statut2__1",
+    "equipe": "status",
+    "mat_csl1": "connecter_les_tableaux__1",
+    "prenom_nom_csl1": "miroir2__1",
+    "mat_cf": "connecter_les_tableaux8__1",
+    "prenom_nom_cf": "miroir_10__1",
+    "mat_csl2": "chiffres9__1",  # ✅ FIXED
+}
+
+COPIE_DETECTION_COLUMN_MAP = {
+    "date": "date__1",
+    "semaine": "formule__1",  # ✅ FIXED
+    "ligne": "statut__1",
+    "bu": "statut2__1",
+    "poste": "statut5__1",
+    "equipe": "status",
+    "nombre": "chiffres__1",
+    "mat_cf": "chiffres8__1",  # ✅ FIXED
+}
