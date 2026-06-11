@@ -82,13 +82,26 @@ class DefectOut(DefectCreate):
 
 
 class DefectUpdate(BaseModel):
-    securisation: str
-    poste_occurrence: str
-    poste_detection: str
-    root_cause_occurrence: str
-    root_cause_non_detection: str
-    plan_action_occurrence: str
-    plan_action_non_detection: str
+    date_detection: Optional[date] = None
+    bu: Optional[str] = None
+    ligne: Optional[str] = None
+    poste: Optional[str] = None
+    equipe: Optional[str] = None
+    defaut: Optional[str] = None
+    nombre: Optional[int] = None
+    mat_csl1: Optional[str] = None
+    prenom_nom_csl1: Optional[str] = None
+    mat_cf: Optional[str] = None
+    prenom_nom_cf: Optional[str] = None
+    quantite_controlee: Optional[int] = None
+    # Workflow fields (optional for edit)
+    securisation: Optional[str] = None
+    poste_occurrence: Optional[str] = None
+    poste_detection: Optional[str] = None
+    root_cause_occurrence: Optional[str] = None
+    root_cause_non_detection: Optional[str] = None
+    plan_action_occurrence: Optional[str] = None
+    plan_action_non_detection: Optional[str] = None
 
 
 class ProdValidation(BaseModel):

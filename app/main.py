@@ -408,13 +408,49 @@ def update_defect(defect_id: int, payload: DefectUpdate, db: Session = Depends(g
     if defect is None:
         raise HTTPException(status_code=404, detail="Defect not found")
 
-    defect.securisation = payload.securisation
-    defect.poste_occurrence = payload.poste_occurrence
-    defect.poste_detection = payload.poste_detection
-    defect.root_cause_occurrence = payload.root_cause_occurrence
-    defect.root_cause_non_detection = payload.root_cause_non_detection
-    defect.plan_action_occurrence = payload.plan_action_occurrence
-    defect.plan_action_non_detection = payload.plan_action_non_detection
+    # Update basic defect fields
+    if payload.date_detection is not None:
+        defect.date_detection = payload.date_detection
+    if payload.bu is not None:
+        defect.bu = payload.bu
+    if payload.ligne is not None:
+        defect.ligne = payload.ligne
+    if payload.poste is not None:
+        defect.poste = payload.poste
+    if payload.equipe is not None:
+        defect.equipe = payload.equipe
+    if payload.defaut is not None:
+        defect.defaut = payload.defaut
+    if payload.nombre is not None:
+        defect.nombre = payload.nombre
+    if payload.mat_csl1 is not None:
+        defect.mat_csl1 = payload.mat_csl1
+    if payload.prenom_nom_csl1 is not None:
+        defect.prenom_nom_csl1 = payload.prenom_nom_csl1
+    if payload.mat_cf is not None:
+        defect.mat_cf = payload.mat_cf
+    if payload.prenom_nom_cf is not None:
+        defect.prenom_nom_cf = payload.prenom_nom_cf
+    if payload.quantite_controlee is not None:
+        defect.quantite_controlee = payload.quantite_controlee
+
+    # Update workflow fields if provided
+    if payload.securisation is not None:
+        defect.securisation = payload.securisation
+    if payload.poste_occurrence is not None:
+        defect.poste_occurrence = payload.poste_occurrence
+    if payload.poste_detection is not None:
+        defect.poste_detection = payload.poste_detection
+    if payload.root_cause_occurrence is not None:
+        defect.root_cause_occurrence = payload.root_cause_occurrence
+    if payload.root_cause_non_detection is not None:
+        defect.root_cause_non_detection = payload.root_cause_non_detection
+    if payload.plan_action_occurrence is not None:
+        defect.plan_action_occurrence = payload.plan_action_occurrence
+    if payload.plan_action_non_detection is not None:
+        defect.plan_action_non_detection = payload.plan_action_non_detection
+
+    # Set status and treatment date when treatment is submitted
     defect.treatment_date = date.today()
     defect.status = "ATT_VALIDATION_PROD"
 
