@@ -1,4 +1,5 @@
-from datetime import datetime
+from datetime import datetime, timedelta
+import logging
 
 from fastapi import APIRouter, Body, Depends, HTTPException
 from sqlalchemy.orm import Session
@@ -9,6 +10,7 @@ from .models import Defect, DefectType, WorkerCSL1, WorkerCF , Quantite, CopieDe
 
 
 router = APIRouter()
+logger = logging.getLogger(__name__)
 
 
 def parse_date_value(value):
@@ -816,14 +818,28 @@ def nombre_par_semaine(db: Session = Depends(get_db)):
 
 @router.get("/quantite-par-ligne-semaine-actuelle")
 def quantite_par_ligne_semaine_actuelle(db: Session = Depends(get_db)):
-    from datetime import datetime, timedelta
-    import locale
-    locale.setlocale(locale.LC_TIME, 'fr_FR.UTF-8')
-    
+    try:
+        return _quantite_par_ligne_semaine_actuelle_impl(db)
+    except Exception as exc:
+        logger.exception("quantite-par-ligne-semaine-actuelle failed")
+        raise HTTPException(
+            status_code=500,
+            detail="Failed to load current-week quantity by line",
+        ) from exc
+
+
+def _quantite_par_ligne_semaine_actuelle_impl(db: Session):
     today = datetime.today()
     current_year = today.isocalendar()[0]
     current_week = today.isocalendar()[1]
     previous_week = current_week - 1
+
+    logger.info(
+        "quantite-par-ligne-semaine-actuelle start: year=%s current_week=%s previous_week=%s",
+        current_year,
+        current_week,
+        previous_week,
+    )
 
     rows = db.query(
         extract("week", Quantite.date).label("week"),
@@ -837,6 +853,11 @@ def quantite_par_ligne_semaine_actuelle(db: Session = Depends(get_db)):
         "week",
         Quantite.ligne
     ).all()
+
+    logger.info(
+        "quantite-par-ligne-semaine-actuelle query returned %s rows",
+        len(rows),
+    )
 
     # Calculate Monday-Sunday for each week
     def get_week_range(year, week):
@@ -852,6 +873,14 @@ def quantite_par_ligne_semaine_actuelle(db: Session = Depends(get_db)):
     # Pivot data
     result_dict = {}
     for r in rows:
+        if r.week is None:
+            logger.warning(
+                "quantite-par-ligne-semaine-actuelle skipped row with NULL week: ligne=%s total=%s",
+                r.ligne,
+                r.total,
+            )
+            continue
+
         week = int(r.week)
         
         if week == current_week:
@@ -865,7 +894,12 @@ def quantite_par_ligne_semaine_actuelle(db: Session = Depends(get_db)):
         ligne = r.ligne or "Non défini"
         result_dict[date_label][ligne] = int(r.total or 0)
 
-    return sorted(result_dict.values(), key=lambda x: x["date"])
+    result = sorted(result_dict.values(), key=lambda x: x["date"])
+    logger.info(
+        "quantite-par-ligne-semaine-actuelle returning %s buckets",
+        len(result),
+    )
+    return result
 
 
 @router.get("/status-distribution")
