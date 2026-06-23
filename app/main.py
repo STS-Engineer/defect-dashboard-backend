@@ -77,14 +77,14 @@ DEFAULT_USERS = [
     {
         "username": "ghassen.hajjem",
         "password": "change123",
-        "role": "Responsable Qualite",
+        "role": "Consultant Qualite",
         "display_name": "Ghassen HAJJEM",
         "force_password_change": True,
     },
     {
         "username": "montassar.benhadj",
         "password": "change123",
-        "role": "Responsable Qualite",
+        "role": "Consultant Qualite",
         "display_name": "Montassar BEN HADJ MOHAMED",
         "force_password_change": True,
     },
