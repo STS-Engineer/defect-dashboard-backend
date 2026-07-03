@@ -1,6 +1,11 @@
 from datetime import date, datetime
 from typing import Optional
-from pydantic import BaseModel
+from pydantic import BaseModel, model_validator
+
+
+def validate_distinct_cf(mat_cf: Optional[str], mat_cf_2: Optional[str]):
+    if mat_cf and mat_cf_2 and mat_cf == mat_cf_2:
+        raise ValueError("Mat CF 2 must be different from Mat CF")
 
 
 class UserLogin(BaseModel):
@@ -60,10 +65,17 @@ class DefectCreate(BaseModel):
 
     mat_cf: Optional[str] = None
     prenom_nom_cf: Optional[str] = None
+    mat_cf_2: Optional[str] = None
+    prenom_nom_cf_2: Optional[str] = None
 
     monday_group: Optional[str] = None
     quantite_controlee: Optional[int] = None
     saisie_quantite_totale: bool = False
+
+    @model_validator(mode="after")
+    def validate_cf_inspectors(self):
+        validate_distinct_cf(self.mat_cf, self.mat_cf_2)
+        return self
 
 
 class DefectOut(DefectCreate):
@@ -93,6 +105,8 @@ class DefectUpdate(BaseModel):
     prenom_nom_csl1: Optional[str] = None
     mat_cf: Optional[str] = None
     prenom_nom_cf: Optional[str] = None
+    mat_cf_2: Optional[str] = None
+    prenom_nom_cf_2: Optional[str] = None
     quantite_controlee: Optional[int] = None
     # Workflow fields (optional for edit)
     securisation: Optional[str] = None
@@ -102,6 +116,11 @@ class DefectUpdate(BaseModel):
     root_cause_non_detection: Optional[str] = None
     plan_action_occurrence: Optional[str] = None
     plan_action_non_detection: Optional[str] = None
+
+    @model_validator(mode="after")
+    def validate_cf_inspectors(self):
+        validate_distinct_cf(self.mat_cf, self.mat_cf_2)
+        return self
 
 
 class ProdValidation(BaseModel):

@@ -236,6 +236,8 @@ def analyse_operatrice_cf(db: Session = Depends(get_db)):
     rows = db.query(
         Defect.mat_cf,
         Defect.prenom_nom_cf,
+        Defect.mat_cf_2,
+        Defect.prenom_nom_cf_2,
         Defect.bu,
         func.sum(Defect.nombre).label("total"),
     ).filter(
@@ -243,6 +245,8 @@ def analyse_operatrice_cf(db: Session = Depends(get_db)):
     ).group_by(
         Defect.mat_cf,
         Defect.prenom_nom_cf,
+        Defect.mat_cf_2,
+        Defect.prenom_nom_cf_2,
         Defect.bu
     ).order_by(
         func.sum(Defect.nombre).desc()
@@ -257,6 +261,12 @@ def analyse_operatrice_cf(db: Session = Depends(get_db)):
             result_dict[label] = {"operatrice": label, "mat": mat_cf, "name": r.prenom_nom_cf}
         bu = r.bu or "Non défini"
         result_dict[label][bu] = int(r.total or 0)
+
+        if r.mat_cf_2:
+            label_2 = f"{r.mat_cf_2}"
+            if label_2 not in result_dict:
+                result_dict[label_2] = {"operatrice": label_2, "mat": r.mat_cf_2, "name": r.prenom_nom_cf_2}
+            result_dict[label_2][bu] = result_dict[label_2].get(bu, 0) + int(r.total or 0)
 
     # Sort by total descending
     sorted_result = sorted(

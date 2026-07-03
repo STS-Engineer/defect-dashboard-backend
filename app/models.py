@@ -64,6 +64,8 @@ class Defect(Base):
 
     mat_cf = Column(String, nullable=True)
     prenom_nom_cf = Column(String, nullable=True)
+    mat_cf_2 = Column(String, nullable=True)
+    prenom_nom_cf_2 = Column(String, nullable=True)
 
     quantite_controlee = Column(Integer, nullable=True)
     saisie_quantite_totale = Column(Boolean, default=False)

@@ -31,6 +31,14 @@ from .lookups import router as lookups_router
 from .monday_client import monday_request
 from .config import MONDAY_QUANTITE_BOARD_ID, MONDAY_COPIE_DETECTION_BOARD_ID
 
+
+def validate_distinct_cf_inspectors(mat_cf, mat_cf_2):
+    if mat_cf and mat_cf_2 and mat_cf == mat_cf_2:
+        raise HTTPException(
+            status_code=400,
+            detail="Mat CF 2 must be different from Mat CF",
+        )
+
 DEFAULT_USERS = [
     {
         "username": "superviseur",
@@ -355,6 +363,7 @@ def get_defects(
 @app.post("/defects", response_model=DefectOut)
 def create_defect(payload: DefectCreate, db: Session = Depends(get_db)):
     detection_date = payload.date_detection or date.today()
+    validate_distinct_cf_inspectors(payload.mat_cf, payload.mat_cf_2)
 
     defect = Defect(
         monday_item_id=None,
@@ -391,6 +400,8 @@ def create_defect(payload: DefectCreate, db: Session = Depends(get_db)):
         prenom_nom_csl1=payload.prenom_nom_csl1,
         mat_cf=payload.mat_cf,
         prenom_nom_cf=payload.prenom_nom_cf,
+        mat_cf_2=payload.mat_cf_2,
+        prenom_nom_cf_2=payload.prenom_nom_cf_2,
         quantite_controlee=payload.quantite_controlee,
         saisie_quantite_totale=payload.saisie_quantite_totale,
     )
@@ -431,8 +442,14 @@ def update_defect(defect_id: int, payload: DefectUpdate, db: Session = Depends(g
         defect.mat_cf = payload.mat_cf
     if payload.prenom_nom_cf is not None:
         defect.prenom_nom_cf = payload.prenom_nom_cf
+    if "mat_cf_2" in payload.model_fields_set:
+        defect.mat_cf_2 = payload.mat_cf_2
+    if "prenom_nom_cf_2" in payload.model_fields_set:
+        defect.prenom_nom_cf_2 = payload.prenom_nom_cf_2
     if payload.quantite_controlee is not None:
         defect.quantite_controlee = payload.quantite_controlee
+
+    validate_distinct_cf_inspectors(defect.mat_cf, defect.mat_cf_2)
 
     # Update workflow fields if provided
     if payload.securisation is not None:
